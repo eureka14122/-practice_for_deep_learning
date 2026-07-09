@@ -1,0 +1,25 @@
+# 数据集（体积大，可自动下载，不入库）
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# 虚拟环境
+.venv/
+venv/
+env/
+
+# 编辑器
+.vscode/
+.idea/
+
+# 模型权重（如有）
+*.pth
+*.pt
+*.ckpt
+
+# 系统
+.DS_Store
