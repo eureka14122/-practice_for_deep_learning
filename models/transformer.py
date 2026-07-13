@@ -23,18 +23,24 @@ class FashionTransformer(nn.Module):
             out_channels = embed_dim,
             kernel_size = patch_size,
             stride = patch_size,
-        ) # [B,1,128,128] -> [B,128，8，8]
+        ) 
+        self.pos_embed = nn.Parameter(
+            torch.randn(1,self.num_patches,embed_dim) * 0.02
+        )
 
     def forward(self, x):
-        x = self.patch_embed(x)
+        x = self.patch_embed(x)  # [B,1,128,128] -> [B,128，8，8]
+        x = x.flatten(2) #[B,128，8，8] -> [B,128,64]
+        x = x.transpose(1,2) #[B,128,64] -> [B,64,128]
+        x = x + self.pos_embed       
         return x 
     
-
-
 if __name__ == "__main__":
     model = FashionTransformer()
 
     x = torch.randn(8, 1, 128, 128)
     output = model(x)
 
-    print(output.shape)
+    print("位置编码形状：", model.pos_embed.shape)
+    print("模型输出形状：", output.shape)
+    print("是否参与训练：", model.pos_embed.requires_grad)
