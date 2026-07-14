@@ -24,14 +24,30 @@ class FashionTransformer(nn.Module):
             kernel_size = patch_size,
             stride = patch_size,
         ) 
+
+        self.cls_token = nn.Parameter(
+            torch.zeros(1,1,embed_dim)
+        )
         self.pos_embed = nn.Parameter(
-            torch.randn(1,self.num_patches,embed_dim) * 0.02
+            torch.randn(1,self.num_patches + 1,embed_dim) * 0.02
         )
 
     def forward(self, x):
+        B = x.shape[0]
+
         x = self.patch_embed(x)  # [B,1,128,128] -> [B,128，8，8]
         x = x.flatten(2) #[B,128，8，8] -> [B,128,64]
         x = x.transpose(1,2) #[B,128,64] -> [B,64,128]
+
+        cls_tokens = self.cls_token.expand(
+            B,-1,-1
+        )  # [1,1,128] -> [B,1,128]
+
+        x = torch.cat(
+            (cls_tokens, x),
+            dim = 1
+        ) # 拼起来 —> [B,65,128]
+
         x = x + self.pos_embed       
         return x 
     
